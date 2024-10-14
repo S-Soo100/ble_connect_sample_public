@@ -9,11 +9,9 @@ import 'screens/home_screen.dart';
 
 void main() async {
   runApp(MultiProvider(providers: [
-    ChangeNotifierProvider<BaseSensorService>(
-        create: (_) => ArmBandServiceLeft()),
+    ChangeNotifierProvider(create: (_) => ArmBandServiceLeft()),
     ChangeNotifierProvider(create: (_) => ArmBandServiceRight()),
-    ChangeNotifierProvider<BaseSensorService>(
-        create: (_) => WheelyHubService()),
+    ChangeNotifierProvider(create: (_) => WheelyHubService()),
   ], child: const MyApp()));
 }
 
