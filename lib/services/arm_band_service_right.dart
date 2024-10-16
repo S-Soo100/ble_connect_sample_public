@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:ble_connect_sample_public/core/consts.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter/material.dart';
 
@@ -8,8 +9,7 @@ import 'base_sensor_service.dart';
 // ArmBandServiceRight: TracME_UR (오른쪽) 관리
 class ArmBandServiceRight extends BaseSensorService {
   ArmBandServiceRight() {
-    // TracME_UR 장치 이름 설정
-    deviceNames = ["TracME_UR"];
+    deviceNames = [Consts.rightArmBandName];
   }
 
   @override
@@ -20,6 +20,7 @@ class ArmBandServiceRight extends BaseSensorService {
       c += String.fromCharCode(value[i]);
     }
     print('Right device notify data: $c');
+    notifyValue = c;
     notifyListeners();
   }
 }

@@ -1,35 +1,48 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:ble_connect_sample_public/core/consts.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter/material.dart';
 
 class BaseSensorService with ChangeNotifier {
   BluetoothDevice? connectedDevice;
+  late List<String> deviceNames;
   BluetoothCharacteristic? writeCharacteristic;
+  DeviceIdentifier? writeDeviceIdentifier;
   BluetoothCharacteristic? notifyCharacteristic;
+  DeviceIdentifier? notifyDeviceIdentifier;
 
   bool isScanning = false;
+  bool isReading = false;
 
   // notify 데이터를 저장할 맵 (특성 UUID를 키로 사용)
   Map<String, List<int>> notifyDatas = {};
 
-  // 장치 이름 목록을 저장하는 내부 변수
-  late List<String> deviceNames;
+  String notifyValue = "";
 
   // 장치 스캔을 시작하는 메서드
   Future<void> startScan() async {
+    if (isScanning) {
+      stopScan();
+    }
     if (!isScanning && deviceNames.isNotEmpty) {
       isScanning = true;
       await FlutterBluePlus.startScan(withNames: deviceNames);
       FlutterBluePlus.scanResults.listen((results) {
         for (ScanResult result in results) {
-          if (deviceNames.contains(result.device.name)) {
+          if (deviceNames.contains(result.device.advName)) {
+            print("----------------------------------------------------`");
+            print("ARMBAND device ${result.device.advName}");
+            print("----------------------------------------------------`");
             connectDevice(result.device);
             break;
           }
         }
       });
       notifyListeners();
+    } else {
+      stopScan();
+      print(" SCANNING OR DEVICE NAME IS EMPTY");
     }
   }
 
@@ -39,9 +52,11 @@ class BaseSensorService with ChangeNotifier {
       await device.connect();
       connectedDevice = device;
       discoverServices(device);
+      print("Device connection : ${device.advName}");
     } catch (e) {
       print("Device connection error: $e");
     }
+    stopScan();
     notifyListeners();
   }
 
@@ -50,12 +65,12 @@ class BaseSensorService with ChangeNotifier {
     List<BluetoothService> services = await device.discoverServices();
     for (var service in services) {
       for (var characteristic in service.characteristics) {
-        if (characteristic.uuid.toString() ==
-            "6e400003-b5a3-f393-e0a9-e50e24dcca9e") {
+        if (characteristic.uuid.toString() == Consts.readUuid) {
           notifyCharacteristic = characteristic;
           listenToNotifications(characteristic);
-        } else if (characteristic.uuid.toString() ==
-            "6e400002-b5a3-f393-e0a9-e50e24dcca9e") {
+        } else if (characteristic.uuid.toString() == Consts.writeUuid) {
+          // write
+          print("write characteristic connect");
           writeCharacteristic = characteristic;
         }
       }
@@ -69,8 +84,8 @@ class BaseSensorService with ChangeNotifier {
     characteristic.lastValueStream.listen((value) {
       // Notify 데이터를 저장
       notifyDatas[characteristic.uuid.toString()] = value;
-
       // notifyListeners()를 통해 UI 업데이트
+      handleNotifyData(value); // 하위 클래스에서 처리
       notifyListeners();
     });
   }
@@ -87,5 +102,10 @@ class BaseSensorService with ChangeNotifier {
     FlutterBluePlus.stopScan();
     isScanning = false;
     notifyListeners();
+  }
+
+  // 하위 클래스에서 처리할 notify 데이터
+  void handleNotifyData(List<int> value) {
+    // 하위 클래스에서 구현
   }
 }
