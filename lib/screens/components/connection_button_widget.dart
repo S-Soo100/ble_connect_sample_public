@@ -38,18 +38,28 @@ class ConnectionButtonWidget extends StatelessWidget {
                     children: [
                       ElevatedButton(
                           onPressed: () {
-                            service.sendData("6");
+                            if (!service.isReading) {
+                              service.sendData("6");
+                            }
                           },
-                          child: Text("Stat Read")),
-                      ElevatedButton(
-                          onPressed: () {}, child: Text("Connection End")),
+                          child: Text(!service.isReading
+                              ? "Start Read"
+                              : "Reading...")),
+                      // ElevatedButton(
+                      //     onPressed: () {}, child: Text("Connection End")),
                       Container(
                           margin: const EdgeInsets.all(8),
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.green),
-                          child: Text(service.notifyValue)),
+                              borderRadius: BorderRadius.circular(4),
+                              color: Colors.green[50]),
+                          child: Column(
+                            children: [
+                              Text("Current : " + service.notifyValue),
+                              Text("Max : " + service.maxValue),
+                              Text("Min : " + service.minValue),
+                            ],
+                          )),
                     ],
                   ),
                 )

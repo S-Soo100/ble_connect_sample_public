@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:ble_connect_sample_public/core/consts.dart';
+import 'package:ble_connect_sample_public/core/utility.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter/material.dart';
 
-class BaseSensorService with ChangeNotifier {
+class BaseSensorService with ChangeNotifier, Utility {
   BluetoothDevice? connectedDevice;
   late List<String> deviceNames;
   BluetoothCharacteristic? writeCharacteristic;
@@ -19,6 +20,10 @@ class BaseSensorService with ChangeNotifier {
   Map<String, List<int>> notifyDatas = {};
 
   String notifyValue = "";
+  int minValueNum = 800;
+  String get minValue => minValueNum.toString();
+  int maxValueNum = 0;
+  String get maxValue => maxValueNum.toString();
 
   // 장치 스캔을 시작하는 메서드
   Future<void> startScan() async {
@@ -31,9 +36,7 @@ class BaseSensorService with ChangeNotifier {
       FlutterBluePlus.scanResults.listen((results) {
         for (ScanResult result in results) {
           if (deviceNames.contains(result.device.advName)) {
-            print("----------------------------------------------------`");
             print("ARMBAND device ${result.device.advName}");
-            print("----------------------------------------------------`");
             connectDevice(result.device);
             break;
           }
@@ -94,6 +97,7 @@ class BaseSensorService with ChangeNotifier {
   void sendData(String data) {
     if (writeCharacteristic != null) {
       writeCharacteristic!.write(utf8.encode(data));
+      isReading = true;
     }
   }
 

@@ -1,8 +1,4 @@
-import 'dart:async';
-import 'dart:convert';
 import 'package:ble_connect_sample_public/core/consts.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:flutter/material.dart';
 import 'base_sensor_service.dart';
 
 // ArmBandServiceLeft: TracME_UL (왼쪽) 관리
@@ -19,9 +15,17 @@ class ArmBandServiceLeft extends BaseSensorService {
     for (int i = 0; i < value.length && value[i] != 0; i++) {
       c += String.fromCharCode(value[i]);
     }
-    print('ARMBAND Left device notify data: $c');
-
-    notifyValue = c;
+    try {
+      notifyValue = cleanString(c);
+      if (int.parse(notifyValue) > maxValueNum) {
+        maxValueNum = int.parse(notifyValue);
+      }
+      if (int.parse(notifyValue) < minValueNum) {
+        minValueNum = int.parse(notifyValue);
+      }
+    } catch (e) {
+      notifyValue = "";
+    }
     notifyListeners();
   }
 }
