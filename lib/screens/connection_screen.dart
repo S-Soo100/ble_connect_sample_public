@@ -14,17 +14,18 @@ class ConnectionScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('ArmBand Connection'),
       ),
-      body: Row(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Row(),
           ConnectionButtonWidget(
               context: context,
-              title: 'Connect Left ArmBand',
+              title: '👈  Connect Left ArmBand',
               service: context.watch<ArmBandServiceLeft>()),
           ConnectionButtonWidget(
               context: context,
-              title: 'Connect Right ArmBand',
+              title: 'Connect Right ArmBand 👉',
               service: context.watch<ArmBandServiceRight>()),
         ],
       ),
