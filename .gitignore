@@ -42,3 +42,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /lib/services/ble_controller.dart
+/core/consts.dart

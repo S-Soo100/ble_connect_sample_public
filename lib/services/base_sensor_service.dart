@@ -67,10 +67,10 @@ class BaseSensorService with ChangeNotifier, Utility {
     List<BluetoothService> services = await device.discoverServices();
     for (var service in services) {
       for (var characteristic in service.characteristics) {
-        if (characteristic.uuid.toString() == Consts.readUuid) {
+        if (characteristic.uuid.toString() == Consts.armBandReadUUID) {
           notifyCharacteristic = characteristic;
           listenToNotifications(characteristic);
-        } else if (characteristic.uuid.toString() == Consts.writeUuid) {
+        } else if (characteristic.uuid.toString() == Consts.armBandWriteUUID) {
           // write
           print("write characteristic connect");
           writeCharacteristic = characteristic;
