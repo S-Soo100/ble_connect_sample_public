@@ -1,16 +1,3 @@
-# ble_connect_sample_public
+# 블루투스 연결에 대한 공개 가능한 레포지토리 입니다
 
-ble_connect_sample_public
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- flutter blue plus를 통해서 블루투스 기기를 검색/연결하는 다양한 방법을 샘플로 만들어 놓습니다.
