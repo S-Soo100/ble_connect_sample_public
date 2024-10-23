@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:ble_connect_sample_public/core/consts.dart';
 import 'package:ble_connect_sample_public/core/utility.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:flutter/material.dart';
 
 class BaseSensorService with ChangeNotifier, Utility {
   BluetoothDevice? connectedDevice;
@@ -16,11 +16,8 @@ class BaseSensorService with ChangeNotifier, Utility {
   bool isScanning = false;
   bool isReading = false;
 
-  // notify 데이터를 저장할 맵 (특성 UUID를 키로 사용)
-  Map<String, List<int>> notifyDatas = {};
-
   String notifyValue = "";
-  int minValueNum = 800;
+  int minValueNum = 1500;
   String get minValue => minValueNum.toString();
   int maxValueNum = 0;
   String get maxValue => maxValueNum.toString();
@@ -36,7 +33,6 @@ class BaseSensorService with ChangeNotifier, Utility {
       FlutterBluePlus.scanResults.listen((results) {
         for (ScanResult result in results) {
           if (deviceNames.contains(result.device.advName)) {
-            print("ARMBAND device ${result.device.advName}");
             connectDevice(result.device);
             break;
           }
@@ -45,7 +41,6 @@ class BaseSensorService with ChangeNotifier, Utility {
       notifyListeners();
     } else {
       stopScan();
-      print(" SCANNING OR DEVICE NAME IS EMPTY");
     }
   }
 
@@ -55,9 +50,13 @@ class BaseSensorService with ChangeNotifier, Utility {
       await device.connect();
       connectedDevice = device;
       discoverServices(device);
-      print("Device connection : ${device.advName}");
+      if (kDebugMode) {
+        print("Device connection : ${device.advName}");
+      }
     } catch (e) {
-      print("Device connection error: $e");
+      if (kDebugMode) {
+        print("Device connection error: $e");
+      }
     }
     stopScan();
     notifyListeners();
@@ -85,9 +84,6 @@ class BaseSensorService with ChangeNotifier, Utility {
   void listenToNotifications(BluetoothCharacteristic characteristic) {
     characteristic.setNotifyValue(true);
     characteristic.lastValueStream.listen((value) {
-      // Notify 데이터를 저장
-      notifyDatas[characteristic.uuid.toString()] = value;
-      // notifyListeners()를 통해 UI 업데이트
       handleNotifyData(value); // 하위 클래스에서 처리
       notifyListeners();
     });

@@ -1,4 +1,5 @@
 import 'package:ble_connect_sample_public/core/consts.dart';
+import 'package:flutter/foundation.dart';
 
 import 'base_sensor_service.dart';
 
@@ -10,7 +11,9 @@ class ArmBandServiceRight extends BaseSensorService {
 
   @override
   void handleNotifyData(List<int> value) {
-    print("Right signal is  " + value.toString());
+    if (kDebugMode) {
+      print("Right signal is  $value");
+    }
     String c = '';
     for (int i = 0; i < value.length && value[i] != 0; i++) {
       c += String.fromCharCode(value[i]);

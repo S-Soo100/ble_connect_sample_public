@@ -55,11 +55,11 @@ class BodyIndicator extends StatelessWidget {
   final Color color;
 
   const BodyIndicator({
-    Key? key,
+    super.key,
     this.width = 200,
     this.height = 100,
     this.color = Colors.blue,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -12,13 +12,13 @@ class ConnectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ArmBand Connection'),
+        title: const Text('ArmBand Connection'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(),
+          const Row(),
           ConnectionButtonWidget(
               context: context,
               title: '👈  Connect Left ArmBand',

@@ -29,7 +29,7 @@ class ConnectionButtonWidget extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           service.connectedDevice != null
               ? SizedBox(
@@ -82,19 +82,19 @@ class ConnectionButtonWidget extends StatelessWidget {
             },
             child: Text(service.isScanning ? 'Scanning...' : 'Start Scan'),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           // 연결 상태 표시
           Text(
             service.connectedDevice != null
                 ? 'Connected to ${service.connectedDevice!.name}'
                 : 'Not connected',
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           // 들어오는 read 값 표시
           Text(
             'Read Value: ${service.notifyValue}',
-            style: TextStyle(fontSize: 16, color: Colors.blue),
+            style: const TextStyle(fontSize: 16, color: Colors.blue),
           ),
         ],
       ),
