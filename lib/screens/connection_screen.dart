@@ -1,16 +1,36 @@
-import 'package:flutter/material.dart';
+import 'package:ble_connect_sample_public/screens/components/connection_button_widget.dart';
+import 'package:ble_connect_sample_public/services/arm_band_service_left.dart';
+import 'package:ble_connect_sample_public/services/arm_band_service_right.dart';
 
-class ConnectionScreen extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class ConnectionScreen extends StatelessWidget {
   const ConnectionScreen({super.key});
 
   @override
-  State<ConnectionScreen> createState() => _ConnectionScreenState();
-}
-
-class _ConnectionScreenState extends State<ConnectionScreen> {
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('연결 페이지'), backgroundColor: Colors.purple[100]),);
+      appBar: AppBar(
+        title: const Text('ArmBand Connection'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Row(),
+          ConnectionButtonWidget(
+              context: context,
+              title: '👈  Connect Left ArmBand',
+              service: context.watch<ArmBandServiceLeft>()),
+          ConnectionButtonWidget(
+              context: context,
+              title: 'Connect Right ArmBand 👉',
+              service: context.watch<ArmBandServiceRight>()),
+        ],
+      ),
+    );
   }
+
+  // 버튼을 공통 메서드로 구성
 }

@@ -6,20 +6,21 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('연결 샘플 앱'), backgroundColor: Colors.purple[100]),
+      appBar: AppBar(
+          title: const Text('연결 샘플 앱'), backgroundColor: Colors.purple[100]),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              child: Text('기기 연결'),
+              child: const Text('기기 연결'),
               onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => ConnectionScreen())),
+                  MaterialPageRoute(builder: (_) => const ConnectionScreen())),
             ),
             ElevatedButton(
-              child: Text('데이터 표시'),
+              child: const Text('데이터 표시'),
               onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => DataDisplayScreen())),
+                  MaterialPageRoute(builder: (_) => const DataDisplayScreen())),
             ),
           ],
         ),
