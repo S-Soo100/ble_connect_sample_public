@@ -1,10 +1,10 @@
 // main.dart
+import 'package:ble_connect_sample_public/screens/connection_screen.dart';
 import 'package:ble_connect_sample_public/services/arm_band_service_left.dart';
 import 'package:ble_connect_sample_public/services/arm_band_service_right.dart';
 import 'package:ble_connect_sample_public/services/wheely_hub_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'screens/home_screen.dart';
 
 void main() async {
   runApp(MultiProvider(providers: [
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'BLE Device Connector',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: HomeScreen(),
+      home: const ConnectionScreen(),
     );
   }
 }

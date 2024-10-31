@@ -1,4 +1,5 @@
 import 'package:ble_connect_sample_public/screens/components/body_model_indicator_widget.dart';
+import 'package:ble_connect_sample_public/screens/components/display_tab_component.dart';
 import 'package:ble_connect_sample_public/screens/components/left_arm_indicator.dart';
 import 'package:ble_connect_sample_public/screens/components/right_arm_indicator_widget.dart';
 import 'package:ble_connect_sample_public/services/arm_band_service_left.dart';
@@ -14,40 +15,301 @@ class DataDisplayScreen extends StatefulWidget {
   State<DataDisplayScreen> createState() => _DataDisplayScreenState();
 }
 
-class _DataDisplayScreenState extends State<DataDisplayScreen> {
+class _DataDisplayScreenState extends State<DataDisplayScreen>
+    with TickerProviderStateMixin {
+  int leftCalibrateState = 0;
+  int rightCalibrateState = 0;
+  int inspectState = 0;
+  bool leftCalibration = false;
+  bool rightCalibration = false;
+  bool leftCalibrating = false;
+  bool rightCalibrating = false;
+
+  DisplayTapComponent tabs = DisplayTapComponent();
+
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: tabs.length, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _nextTab() {
+    if (_tabController.index < _tabController.length - 1) {
+      _tabController.animateTo(_tabController.index + 1);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('데이터 표기 페이지'), backgroundColor: Colors.purple[100]),
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                margin: const EdgeInsets.only(top: 70),
-                // ignore: prefer_const_constructors
-                child: BodyIndicator(
-                  width: 100,
-                  height: 150,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Row(
-                children: [
-                  _leftArm(context, context.watch<ArmBandServiceLeft>()),
-                  _rightArm(context, context.watch<ArmBandServiceRight>()),
-                ],
-              ),
-            ),
-          ],
+        title: const Text('데이터 검증 페이지'),
+        backgroundColor: Colors.purple[200],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: tabs.tabHeads,
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _firstTabPage(context), // min max 측정
+          _secondPage(context), // 좌/우 판정
+          _thirdPage(context), // 좌/우 판정
+        ],
+      ),
+    );
+  }
+
+  Widget _firstTabPage(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          context.watch<ArmBandServiceLeft>().isCalibrated
+              ? SizedBox(
+                  width: 200,
+                  height: 240,
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.green[600],
+                        size: 160,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          _nextTab();
+                        },
+                        child: Container(
+                          width: 180,
+                          height: 60,
+                          decoration: BoxDecoration(
+                              color: Colors.green[600],
+                              borderRadius: BorderRadius.circular(30)),
+                          alignment: Alignment.center,
+                          child: const Text(
+                            "다음으로 >",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              : SizedBox(),
+          context.watch<ArmBandServiceLeft>().isCalibrating
+              ? SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: CircularProgressIndicator(),
+                )
+              : SizedBox(),
+          context.watch<ArmBandServiceLeft>().isCalibrated
+              ? SizedBox(
+                  child: Text("Left Calibration Completed"),
+                )
+              : SizedBox(
+                  child: Text(
+                    context.watch<ArmBandServiceLeft>().isCalibrating
+                        ? "Calibrating..."
+                        : "Left Calibration Required!!\n아래 버튼을 눌러서\n가동범위 측정을 시작해주세요.",
+                    style: TextStyle(color: Colors.red, fontSize: 22),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+          ElevatedButton(
+            onPressed: () {
+              Provider.of<ArmBandServiceLeft>(context, listen: false)
+                  .startCalibrating();
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  context.watch<ArmBandServiceLeft>().isCalibrated
+                      ? Icons.check_box_rounded
+                      : Icons.check_box_outline_blank_rounded,
+                  color: context.watch<ArmBandServiceLeft>().isCalibrated
+                      ? Colors.green
+                      : Colors.red,
+                ),
+                Text(!context.watch<ArmBandServiceLeft>().isCalibrated
+                    ? "측정 시작"
+                    : "측정 완료"),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _secondPage(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          context.watch<ArmBandServiceRight>().isCalibrated
+              ? SizedBox(
+                  width: 200,
+                  height: 240,
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.green[600],
+                        size: 160,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          _nextTab();
+                        },
+                        child: Container(
+                          width: 180,
+                          height: 60,
+                          decoration: BoxDecoration(
+                              color: Colors.green[600],
+                              borderRadius: BorderRadius.circular(30)),
+                          alignment: Alignment.center,
+                          child: const Text(
+                            "다음으로 >",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              : SizedBox(),
+          context.watch<ArmBandServiceRight>().isCalibrating
+              ? SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: CircularProgressIndicator(),
+                )
+              : SizedBox(),
+          context.watch<ArmBandServiceRight>().isCalibrated
+              ? SizedBox(
+                  child: Text("Right Calibration Completed"),
+                )
+              : SizedBox(
+                  child: Text(
+                    context.watch<ArmBandServiceRight>().isCalibrating
+                        ? "Calibrating..."
+                        : "Right Calibration Required!!\n아래 버튼을 눌러서\n가동범위 측정을 시작해주세요.",
+                    style: TextStyle(color: Colors.red, fontSize: 22),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+          ElevatedButton(
+            onPressed: () {
+              Provider.of<ArmBandServiceRight>(context, listen: false)
+                  .startCalibrating();
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  context.watch<ArmBandServiceRight>().isCalibrated
+                      ? Icons.check_box_rounded
+                      : Icons.check_box_outline_blank_rounded,
+                  color: context.watch<ArmBandServiceRight>().isCalibrated
+                      ? Colors.green
+                      : Colors.red,
+                ),
+                Text(!context.watch<ArmBandServiceRight>().isCalibrated
+                    ? "측정 시작"
+                    : "측정 완료"),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _thirdPage(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(top: 80),
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height - 200,
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.topCenter,
+            child: Container(
+              margin: const EdgeInsets.only(top: 10),
+              // ignore: prefer_const_constructors
+              child: BodyIndicator(
+                width: 100,
+                height: 150,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Row(
+              children: [
+                _leftArm(context, context.watch<ArmBandServiceLeft>()),
+                _rightArm(context, context.watch<ArmBandServiceRight>()),
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text("LEFT"),
+                    Text(context.watch<ArmBandServiceLeft>().notifyValue == ""
+                        ? "disconnected"
+                        : "Crnt: ${context.watch<ArmBandServiceLeft>().notifyValue}"),
+                    Text(context.watch<ArmBandServiceLeft>().notifyValue == ""
+                        ? "-"
+                        : "Max : ${context.watch<ArmBandServiceLeft>().maxValue}"),
+                    Text(context.watch<ArmBandServiceLeft>().notifyValue == ""
+                        ? "-"
+                        : "Min : ${context.watch<ArmBandServiceLeft>().minValue}"),
+                  ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text("RIGHT"),
+                    Text(context.watch<ArmBandServiceRight>().notifyValue == ""
+                        ? "disconnected"
+                        : "Crnt: ${context.watch<ArmBandServiceRight>().notifyValue}"),
+                    Text(context.watch<ArmBandServiceRight>().notifyValue == ""
+                        ? "-"
+                        : "Max : ${context.watch<ArmBandServiceRight>().maxValue}"),
+                    Text(context.watch<ArmBandServiceRight>().notifyValue == ""
+                        ? "-"
+                        : "Min : ${context.watch<ArmBandServiceRight>().minValue}"),
+                  ],
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -62,11 +324,6 @@ class _DataDisplayScreenState extends State<DataDisplayScreen> {
         padding: const EdgeInsets.only(left: 40.0),
         child: Column(
           children: [
-            Text(service.notifyValue == ""
-                ? "disconnected"
-                : "Crnt: ${service.notifyValue}"),
-            Text(service.notifyValue == "" ? "-" : "Max : ${service.maxValue}"),
-            Text(service.notifyValue == "" ? "-" : "Min : ${service.minValue}"),
             service.notifyValue == ""
                 ? const SizedBox()
                 : LeftArmIndicator(
@@ -87,11 +344,6 @@ class _DataDisplayScreenState extends State<DataDisplayScreen> {
         padding: const EdgeInsets.only(right: 40.0),
         child: Column(
           children: [
-            Text(service.notifyValue == ""
-                ? "disconnected"
-                : "Crnt: ${service.notifyValue}"),
-            Text(service.notifyValue == "" ? "-" : "Max : ${service.maxValue}"),
-            Text(service.notifyValue == "" ? "-" : "Min : ${service.minValue}"),
             service.notifyValue == ""
                 ? const SizedBox()
                 : RightArmIndicatorWidget(

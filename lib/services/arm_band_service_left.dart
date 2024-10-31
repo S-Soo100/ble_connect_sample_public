@@ -19,11 +19,20 @@ class ArmBandServiceLeft extends BaseSensorService {
     }
     try {
       notifyValue = cleanString(c);
-      if (int.parse(notifyValue) > maxValueNum) {
-        maxValueNum = int.parse(notifyValue);
+
+      int intValue = int.parse(notifyValue);
+
+      if (isCalibrating) {
+        if (intValue > maxValueNum) {
+          maxValueNum = intValue;
+        }
+        if (intValue < minValueNum) {
+          minValueNum = intValue;
+        }
       }
-      if (int.parse(notifyValue) < minValueNum) {
-        minValueNum = int.parse(notifyValue);
+
+      if (isCounting) {
+        countNumber(intValue);
       }
     } catch (e) {
       notifyValue = "";

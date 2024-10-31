@@ -15,12 +15,17 @@ class BaseSensorService with ChangeNotifier, Utility {
 
   bool isScanning = false;
   bool isReading = false;
+  bool isCalibrating = false;
+  bool isCalibrated = false;
 
   String notifyValue = "";
   int minValueNum = 1500;
   String get minValue => minValueNum.toString();
   int maxValueNum = 0;
   String get maxValue => maxValueNum.toString();
+
+  int count = 0;
+  bool isCounting = false;
 
   // 장치 스캔을 시작하는 메서드
   Future<void> startScan() async {
@@ -107,5 +112,47 @@ class BaseSensorService with ChangeNotifier, Utility {
   // 하위 클래스에서 처리할 notify 데이터
   void handleNotifyData(List<int> value) {
     // 하위 클래스에서 구현
+  }
+
+  void startCalibrating() {
+    minValueNum = 9999;
+    maxValueNum = 0;
+    isCalibrating = true;
+    notifyListeners();
+    Future.delayed(const Duration(seconds: 3), () {
+      isCalibrating = false;
+      notifyListeners();
+      isCalibrated = true;
+    });
+  }
+
+  resetCalibrating() {
+    if (isCalibrating) return;
+    minValueNum = 9999;
+    maxValueNum = 0;
+    isCalibrating = false;
+    isCalibrated = false;
+    notifyListeners();
+  }
+
+  bool debounce = false;
+
+  void countNumber(int value) {
+    if (isCalibrated && isCounting) {
+      if (value > maxValueNum * 0.7) {
+        if (debounce == false) return;
+        count++;
+        debounce = true;
+        Future.delayed(const Duration(seconds: 1), () {
+          debounce = false;
+        });
+        notifyListeners();
+      }
+    }
+  }
+
+  void setCounting(bool value) {
+    isCounting = value;
+    notifyListeners();
   }
 }
