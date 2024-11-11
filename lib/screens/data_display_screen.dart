@@ -47,6 +47,11 @@ class _DataDisplayScreenState extends State<DataDisplayScreen>
     }
   }
 
+  void _startCounting(BuildContext context) {
+    Provider.of<ArmBandServiceLeft>(context, listen: false).setCounting(true);
+    Provider.of<ArmBandServiceRight>(context, listen: false).setCounting(true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,24 +113,24 @@ class _DataDisplayScreenState extends State<DataDisplayScreen>
                     ],
                   ),
                 )
-              : SizedBox(),
+              : const SizedBox(),
           context.watch<ArmBandServiceLeft>().isCalibrating
-              ? SizedBox(
+              ? const SizedBox(
                   width: 80,
                   height: 80,
                   child: CircularProgressIndicator(),
                 )
-              : SizedBox(),
+              : const SizedBox(),
           context.watch<ArmBandServiceLeft>().isCalibrated
-              ? SizedBox(
+              ? const SizedBox(
                   child: Text("Left Calibration Completed"),
                 )
               : SizedBox(
                   child: Text(
                     context.watch<ArmBandServiceLeft>().isCalibrating
                         ? "Calibrating..."
-                        : "Left Calibration Required!!\n아래 버튼을 눌러서\n가동범위 측정을 시작해주세요.",
-                    style: TextStyle(color: Colors.red, fontSize: 22),
+                        : "아래 버튼을 눌러서\n가동범위 측정을 시작해주세요.",
+                    style: const TextStyle(color: Colors.red, fontSize: 22),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -175,6 +180,7 @@ class _DataDisplayScreenState extends State<DataDisplayScreen>
                       GestureDetector(
                         onTap: () {
                           _nextTab();
+                          _startCounting(context);
                         },
                         child: Container(
                           width: 180,
@@ -195,24 +201,24 @@ class _DataDisplayScreenState extends State<DataDisplayScreen>
                     ],
                   ),
                 )
-              : SizedBox(),
+              : const SizedBox(),
           context.watch<ArmBandServiceRight>().isCalibrating
-              ? SizedBox(
+              ? const SizedBox(
                   width: 80,
                   height: 80,
                   child: CircularProgressIndicator(),
                 )
-              : SizedBox(),
+              : const SizedBox(),
           context.watch<ArmBandServiceRight>().isCalibrated
-              ? SizedBox(
+              ? const SizedBox(
                   child: Text("Right Calibration Completed"),
                 )
               : SizedBox(
                   child: Text(
                     context.watch<ArmBandServiceRight>().isCalibrating
                         ? "Calibrating..."
-                        : "Right Calibration Required!!\n아래 버튼을 눌러서\n가동범위 측정을 시작해주세요.",
-                    style: TextStyle(color: Colors.red, fontSize: 22),
+                        : "아래 버튼을 눌러서\n가동범위 측정을 시작해주세요.",
+                    style: const TextStyle(color: Colors.red, fontSize: 22),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -250,6 +256,34 @@ class _DataDisplayScreenState extends State<DataDisplayScreen>
       height: MediaQuery.of(context).size.height - 200,
       child: Stack(
         children: [
+          // Align(
+          //   alignment: Alignment.topRight,
+          //   child: Container(
+          //     width: 100,
+          //     height: 100,
+          //     color: Colors.green.withOpacity(0.7),
+          //     child: Column(
+          //       children: [
+          //         Text(context
+          //             .watch<ArmBandServiceLeft>()
+          //             .countNotices
+          //             .toString()),
+          //         Text(context
+          //             .watch<ArmBandServiceRight>()
+          //             .countNotices
+          //             .toString()),
+          //         Text(context
+          //             .watch<ArmBandServiceLeft>()
+          //             .isCalibrated
+          //             .toString()),
+          //         Text(context
+          //             .watch<ArmBandServiceRight>()
+          //             .isCalibrated
+          //             .toString()),
+          //       ],
+          //     ),
+          //   ),
+          // ),
           Align(
             alignment: Alignment.topCenter,
             child: Container(
@@ -258,17 +292,22 @@ class _DataDisplayScreenState extends State<DataDisplayScreen>
               child: BodyIndicator(
                 width: 100,
                 height: 150,
-                color: Colors.white,
+                color: Colors.grey[300]!,
               ),
             ),
           ),
           Align(
             alignment: Alignment.topCenter,
-            child: Row(
-              children: [
-                _leftArm(context, context.watch<ArmBandServiceLeft>()),
-                _rightArm(context, context.watch<ArmBandServiceRight>()),
-              ],
+            child: Center(
+              child: SizedBox(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _leftArm(context, context.watch<ArmBandServiceLeft>()),
+                    _rightArm(context, context.watch<ArmBandServiceRight>()),
+                  ],
+                ),
+              ),
             ),
           ),
           Align(
@@ -279,7 +318,44 @@ class _DataDisplayScreenState extends State<DataDisplayScreen>
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text("LEFT"),
+                    Container(
+                      width: 160,
+                      height: 240,
+                      padding: const EdgeInsets.all(10),
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              context.watch<ArmBandServiceLeft>().countNotices
+                                  ? "GOOD!"
+                                  : "",
+                              style: TextStyle(
+                                  color: Colors.green[700]!,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Icon(
+                              Icons.check_circle_sharp,
+                              color: context
+                                      .watch<ArmBandServiceLeft>()
+                                      .countNotices
+                                  ? Colors.green
+                                  : Colors.transparent,
+                              size: 100,
+                            ),
+                            Text(
+                              "L: ${context.watch<ArmBandServiceLeft>().count}",
+                              style: TextStyle(
+                                  color: Colors.green[700]!,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Text("LEFT"),
                     Text(context.watch<ArmBandServiceLeft>().notifyValue == ""
                         ? "disconnected"
                         : "Crnt: ${context.watch<ArmBandServiceLeft>().notifyValue}"),
@@ -294,7 +370,44 @@ class _DataDisplayScreenState extends State<DataDisplayScreen>
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text("RIGHT"),
+                    Container(
+                      width: 160,
+                      height: 240,
+                      padding: const EdgeInsets.all(10),
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              context.watch<ArmBandServiceRight>().countNotices
+                                  ? "GOOD!"
+                                  : "",
+                              style: TextStyle(
+                                  color: Colors.green[700]!,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Icon(
+                              Icons.check_circle_sharp,
+                              color: context
+                                      .watch<ArmBandServiceRight>()
+                                      .countNotices
+                                  ? Colors.green
+                                  : Colors.transparent,
+                              size: 100,
+                            ),
+                            Text(
+                              "R: ${context.watch<ArmBandServiceRight>().count}",
+                              style: TextStyle(
+                                  color: Colors.green[700]!,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Text("RIGHT"),
                     Text(context.watch<ArmBandServiceRight>().notifyValue == ""
                         ? "disconnected"
                         : "Crnt: ${context.watch<ArmBandServiceRight>().notifyValue}"),
@@ -317,7 +430,8 @@ class _DataDisplayScreenState extends State<DataDisplayScreen>
   Widget _leftArm(BuildContext context, BaseSensorService service) {
     return Container(
       alignment: Alignment.topCenter,
-      width: MediaQuery.of(context).size.width / 2,
+      // width: MediaQuery.of(context).size.width / 2,
+      width: 200,
 
       // height: 300,
       child: Padding(
@@ -339,7 +453,8 @@ class _DataDisplayScreenState extends State<DataDisplayScreen>
   Widget _rightArm(BuildContext context, BaseSensorService service) {
     return Container(
       alignment: Alignment.topCenter,
-      width: MediaQuery.of(context).size.width / 2,
+      // width: MediaQuery.of(context).size.width / 2,
+      width: 200,
       child: Padding(
         padding: const EdgeInsets.only(right: 40.0),
         child: Column(

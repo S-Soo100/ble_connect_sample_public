@@ -135,23 +135,39 @@ class BaseSensorService with ChangeNotifier, Utility {
     notifyListeners();
   }
 
-  bool debounce = false;
+  bool armUp = false;
+  bool countNotices = false;
 
   void countNumber(int value) {
-    if (isCalibrated && isCounting) {
-      if (value > maxValueNum * 0.7) {
-        if (debounce == false) return;
+    // if (isCalibrated && isCounting) {
+    print("value: " + value.toString());
+
+    if (armUp) {
+      if (value > (maxValueNum - 300)) {
+        armUp = false;
+      }
+    } else {
+      if (value < (minValueNum + 300)) {
         count++;
-        debounce = true;
+        armUp = true;
+        countNotices = true;
+
+        Future.delayed(const Duration(milliseconds: 500), () {
+          countNotices = false;
+          notifyListeners();
+        });
         Future.delayed(const Duration(seconds: 1), () {
-          debounce = false;
+          armUp = false;
         });
         notifyListeners();
       }
     }
+
+    // }
   }
 
   void setCounting(bool value) {
+    count = 0;
     isCounting = value;
     notifyListeners();
   }

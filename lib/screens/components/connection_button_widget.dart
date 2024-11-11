@@ -55,9 +55,9 @@ class ConnectionButtonWidget extends StatelessWidget {
                               color: Colors.green[50]),
                           child: Column(
                             children: [
-                              Text("Current : " + service.notifyValue),
-                              Text("Max : " + service.maxValue),
-                              Text("Min : " + service.minValue),
+                              Text("Current : ${service.notifyValue}"),
+                              Text("Max : ${service.maxValue}"),
+                              Text("Min : ${service.minValue}"),
                             ],
                           )),
                     ],
