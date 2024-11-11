@@ -7,7 +7,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('연결 샘플 앱'), backgroundColor: Colors.purple[100]),
+          title: const Text('연결 판정 앱'), backgroundColor: Colors.purple[100]),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

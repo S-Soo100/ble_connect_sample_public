@@ -17,7 +17,7 @@ class ConnectionButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 300,
-      height: 300,
+      // height: 300,
       margin: const EdgeInsets.all(12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -33,7 +33,7 @@ class ConnectionButtonWidget extends StatelessWidget {
           ),
           service.connectedDevice != null
               ? SizedBox(
-                  height: 200,
+                  height: 160,
                   child: Column(
                     children: [
                       ElevatedButton(
@@ -55,9 +55,9 @@ class ConnectionButtonWidget extends StatelessWidget {
                               color: Colors.green[50]),
                           child: Column(
                             children: [
-                              Text("Current : " + service.notifyValue),
-                              Text("Max : " + service.maxValue),
-                              Text("Min : " + service.minValue),
+                              Text("Current : ${service.notifyValue}"),
+                              Text("Max : ${service.maxValue}"),
+                              Text("Min : ${service.minValue}"),
                             ],
                           )),
                     ],
@@ -71,7 +71,7 @@ class ConnectionButtonWidget extends StatelessWidget {
 
   SizedBox _unConnected() {
     return SizedBox(
-      height: 200,
+      height: 160,
       child: Column(
         children: [
           ElevatedButton(
